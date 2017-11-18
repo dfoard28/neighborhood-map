@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+    <html class="has-navbar-fixed-top" lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>NeighborHood Map</title>
+            <link rel="stylesheet" href="styles/style.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        </head>
+        <body>
+           <nav class="navbar is-fixed-top is-dark">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <h1 class="navbar-item">NeighborHood Map</h1>
+                            <span class="navbar-burger burger" data-target="locationList">
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                            </span>
+                    </div>
+                    <div id="locationList" class="navbar-menu is-active">
+                        <div class="navbar-end">
+                            <a class="navbar-item">
+                                <span class="icon">
+                                    <i class="fa fa-list-alt"></i>
+                                </span>
+                                <span>Location List</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav> 
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+           <!--     <div class="columns">
+                    <div class="column">-->
+                            <aside class="menu">
+                                    <p class="menu-label">
+                                      Location List
+                                    </p>
+                                    <ul class="menu-list">
+                                      <li data-bind=""><a>Location One</a></li>
+                                    </ul>
+                             </aside>
+                    </div>
+                </div>
+            <script type='text/javascript' src='bower_components/knockout/dist/knockout.js'></script>
+            <script type='text/javascript' src='js/app.js'></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBl52vIlAZBuo9F-nInq6JyBTohiLzTklk&callback=initMap"async defer></script>
+        </body>
+    </html>
