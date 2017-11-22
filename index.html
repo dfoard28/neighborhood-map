@@ -16,37 +16,40 @@
                     <div class="navbar-brand">
                         <h1 class="navbar-item">NeighborHood Map</h1>
                     </div>
-                    <div id="navMenu" class="navbar-menu is-active">
-                        <div class="navbar-end">
-                            <a class="navbar-item">
-                                <span class="icon">
-                                    <i class="fa fa-list-alt"></i>
-                                </span>
-                                <span>Location List</span>
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </nav> 
             <div class="map-container">
                 <div id="map"></div>
             </div>
             <aside class="menu">
-                <p class="menu-label">
-                    Location List
-                </p>
-                <div class="field is-grouped">
-                    <p class="control is-expanded">
-                        <input class="input" type="text" placeholder="Filter Locations">
-                    </p>
-                    <p class="control">
-                        <a class="button is-info is-outlined">
-                            Search
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
+                        <span>Filter Locations</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                      <div class="dropdown-content">
+                        <a href="#" class="dropdown-item">
+                          Food
                         </a>
-                    </p>
-                </div>
+                        <a href="#" class="dropdown-item">
+                          Beach
+                        </a>
+                        <a href="#" class="dropdown-item">
+                          Hotel
+                        </a>
+                        <a href="#" class="dropdown-item">
+                          Park
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 <ul class="menu-list">
-                    <li data-bind="foreach: location"><a data-bind="text: title, click: $parent.showLocation"></a></li>
+                    <li data-bind="foreach: location"><a class="has-text-light" data-bind="text: title"></a></li>
                 </ul>
             </aside>
         </div>

@@ -5,47 +5,50 @@
 //should add the creation of markers to this area
 var ViewModel = function () {
     this.title = location.title;
-    this.lat = location.lat;
-    this.lng = location.lng;
-    this.showLocation = function () {
-        new google.maps.InfoWindow({
-        });
+    this.position = location.position;
+    this.filter = function () {
+
     }
     this.location = ko.observableArray([
         {
             position: {lat: 33.515349, lng: -117.755575},
-            title: 'La Serina Grill'
+            title: 'La Serina Grill',
+            type: 'Food'
         },
         {
             position: {lat: 33.514616, lng: -117.759609},
-            title: 'Treasure Island Beach'
+            title: 'Treasure Island Beach',
+            type: 'Beach'
         },
         {
             position: {lat: 33.515848, lng: -117.756028},
-            title: 'Star-fish Laguna Beach'
+            title: 'Star-fish Laguna Beach',
+            type: 'Food'
         },
         {
             position: {lat: 33.514953, lng: -117.757155},
-            title: 'Montage Laguna Beach'
+            title: 'Montage Laguna Beach',
+            type: 'Hotel'
         },
         {
             position: {lat: 33.524058, lng: -117.764995},
-            title: 'Casa Laguna Hotel and Spa'
+            title: 'Casa Laguna Hotel and Spa',
+            type: 'Hotel'
         },
         {
             position: {lat: 33.520655, lng: -117.764603},
-            title: 'Pirate Tower'
+            title: 'Pirate Tower',
+            type: 'Beach'
         },
         {
             position: {lat: 33.513560, lng: -117.755424},
-            title: 'Treasure Island Park'
+            title: 'Treasure Island Park',
+            type: 'Park'
         }
     ]);
 };
 
 ko.applyBindings(new ViewModel());
-
-//TODO: put this into a promise so we can handle errors?
 
 //Create a map variable
 var map;
@@ -53,7 +56,7 @@ var map;
 function initMap() {
      //use a constructor to create a new map JS object
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 33.514490, lng:  -117.759628},
+        center: {lat: 33.514490, lng: -117.759628},
         zoom: 15,
         styles: [
             {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
@@ -134,90 +137,85 @@ function initMap() {
                 elementType: 'labels.text.stroke',
                 stylers: [{color: '#17263c'}]
             }
-        ] 
-    })
-   //make part of viewmodel but not knockout observables
-    var laSerina = new google.maps.Marker({
-        position: {lat: 33.515349, lng: -117.755575},
-        map: map,
-        title: 'La Serina Grill'
+        ]
     });
-    var infoWindow1 = new google.maps.InfoWindow({
-        content: 'La Serina Grill'
-    });
-    laSerina.addListener('click', function () {
-        infoWindow1.open(map, laSerina);
-    });
-    var marker2 = new google.maps.Marker({
-        position: {lat: 33.514616, lng: -117.759609},
-        map: map,
-        title: 'Treasure Island Beach'
-    });
-    var infoWindow2 = new google.maps.InfoWindow({
-        content: 'Treasure Island Beach'
-    });
-    marker2.addListener('click', function () {
-        infoWindow2.open(map, marker2);
-    });
-    var marker3 = new google.maps.Marker({
-        position: {lat: 33.515848, lng: -117.756028},
-        map: map,
-        title: 'Star-fish Laguna Beach'
-    });
-    var infoWindow3 = new google.maps.InfoWindow({
-        content: 'Star-fish Laguna Beach'
-    });
-    marker3.addListener('click', function () {
-        infoWindow3.open(map, marker3);
-    });
-    var marker4 = new google.maps.Marker({
-        position: {lat: 33.514953, lng: -117.757155},
-        map: map,
-        title: 'Montage Laguna Beach'
-    });
-    var infoWindow4 = new google.maps.InfoWindow({
-        content: 'Montage Laguna Beach'
-    });
-    marker4.addListener('click', function () {
-        infoWindow4.open(map, marker4);
-    });
-    var marker5 = new google.maps.Marker({
-        position: {lat: 33.524058, lng: -117.764995},
-        map: map,
-        title: 'Casa Laguna Hotel and Spa'
-    });
-    var infoWindow5 = new google.maps.InfoWindow({
-        content: 'Casa Laguna Hotel and Spa'
-    });
-    marker5.addListener('click', function () {
-        infoWindow5.open(map, marker5);
-    });
-    var marker6 = new google.maps.Marker({
-        position: {lat: 33.520655, lng: -117.764603},
-        map: map,
-        title: 'Pirate Tower'
-    });
-    var infoWindow6 = new google.maps.InfoWindow({
-        content: 'Pirate Tower'
-    });
-    marker6.addListener('click', function () {
-        infoWindow6.open(map, marker6);
-    });
-    var marker7 = new google.maps.Marker({
-        position: {lat: 33.513560, lng: -117.755424},
-        map: map,
-        title: 'Treasure Island Park'
-    });
-    var infoWindow7 = new google.maps.InfoWindow({
-        content: 'Treasure Island Park'
-    });
-    marker7.addListener('click', function () {
-        infoWindow7.open(map, marker7);
+   // markers array 
+   //TODO:make part of viewmodel but not knockout observables
+    var markers = [
+        {
+            position: {lat: 33.515349, lng: -117.755575},
+            title: 'La Serina Grill',
+            type: 'Food'
+        },
+        {
+            position: {lat: 33.514616, lng: -117.759609},
+            title: 'Treasure Island Beach',
+            type: 'Beach'
+        },
+        {
+            position: {lat: 33.515848, lng: -117.756028},
+            title: 'Star-fish Laguna Beach',
+            type: 'Food'
+        },
+        {
+            position: {lat: 33.514953, lng: -117.757155},
+            title: 'Montage Laguna Beach',
+            type: 'Hotel'
+        },
+        {
+            position: {lat: 33.524058, lng: -117.764995},
+            title: 'Casa Laguna Hotel and Spa',
+            type: 'Hotel'
+        },
+        {
+            position: {lat: 33.520655, lng: -117.764603},
+            title: 'Pirate Tower',
+            type: 'Beach'
+        },
+        {
+            position: {lat: 33.513560, lng: -117.755424},
+            title: 'Treasure Island Park',
+            type: 'Park'
+        }
+    ];
+    //forEach loop that adds a marker, and info window and an event listener for the info window to the map
+    markers.forEach(function (element) {
+        var mark = new google.maps.Marker({
+            position: element.position,
+            map: map,
+            animation: google.maps.Animation.DROP,
+            title: element.title
+        });
+        var info = new google.maps.InfoWindow({
+            content: element.title
+        });
+        mark.addListener('click', function () {
+            info.open(map, mark);
+            toggleBounce();
+        });
+    //function to make markers bounce when clicked on (attribute to google maps api)
+        function toggleBounce() {
+            if (mark.getAnimation() !== null) {
+              mark.setAnimation(null);
+            } else {
+              mark.setAnimation(google.maps.Animation.BOUNCE);
+            }
+        }
     });
 }
+//TODO: AJAX call to foursquare API
+
 
 //TODO: Model (this is where the location information will go)
 //need the list and filter functions here
 
 
 //TODO: add a function to handle errors
+function errors() {
+    //function to handle any errors 
+}
+
+//TODO: add an is-active class to the dropdown element when clicked (do in Knockout?)
+$('.dropdown').click(function () {
+    $(this).toggleClass('is-active');
+});
