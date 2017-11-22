@@ -19,6 +19,18 @@ aside {
     width: 100%;
     height: 800px;
 }
+.menu {
+    border: 2px solid black;
+}
+
+.menu-label {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.field {
+    margin: 10px;
+}
 
 
 

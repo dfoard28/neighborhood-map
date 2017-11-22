@@ -1,33 +1,48 @@
-"use strict";
-//TODO: change this to knockout.js form
-$(function() {
-     // Get all "navbar-burger" elements
-  var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-  
-    // Check if there are any navbar burgers
-    if ($navbarBurgers.length > 0) {
-  
-      // Add a click event on each of them
-      $navbarBurgers.forEach(function ($el) {
-        $el.addEventListener('click', function () {
-  
-          // Get the target from the "data-target" attribute
-          var target = $el.dataset.target;
-          var $target = document.getElementById(target);
-  
-          // Toggle the class on both the "navbar-burger" and the "navbar-menu"
-          $el.classList.toggle('is-active');
-          $target.classList.toggle('is-active');
-  
-        });
-      });
-    }
-  
-  });
-//view model function
+'use strict';
+//TODO: need to implement functionality on nav-bar item.... this should close the aside when clicked
+//TODO: need to implement functionality on the list marker items... when clicked they should open the info window on the marker and should be animated somehow
+//TODO: view model function
+//should add the creation of markers to this area
 var ViewModel = function () {
-    
+    this.title = location.title;
+    this.lat = location.lat;
+    this.lng = location.lng;
+    this.showLocation = function () {
+        new google.maps.InfoWindow({
+        });
+    }
+    this.location = ko.observableArray([
+        {
+            position: {lat: 33.515349, lng: -117.755575},
+            title: 'La Serina Grill'
+        },
+        {
+            position: {lat: 33.514616, lng: -117.759609},
+            title: 'Treasure Island Beach'
+        },
+        {
+            position: {lat: 33.515848, lng: -117.756028},
+            title: 'Star-fish Laguna Beach'
+        },
+        {
+            position: {lat: 33.514953, lng: -117.757155},
+            title: 'Montage Laguna Beach'
+        },
+        {
+            position: {lat: 33.524058, lng: -117.764995},
+            title: 'Casa Laguna Hotel and Spa'
+        },
+        {
+            position: {lat: 33.520655, lng: -117.764603},
+            title: 'Pirate Tower'
+        },
+        {
+            position: {lat: 33.513560, lng: -117.755424},
+            title: 'Treasure Island Park'
+        }
+    ]);
 };
+
 ko.applyBindings(new ViewModel());
 
 //TODO: put this into a promise so we can handle errors?
@@ -121,22 +136,20 @@ function initMap() {
             }
         ] 
     })
-    //make part of viewmodel but not knockout observables
-    var laSerina = {lat: 33.515349, lng: -117.755575};
-    var marker1 = new google.maps.Marker({
-        position: laSerina,
+   //make part of viewmodel but not knockout observables
+    var laSerina = new google.maps.Marker({
+        position: {lat: 33.515349, lng: -117.755575},
         map: map,
         title: 'La Serina Grill'
     });
     var infoWindow1 = new google.maps.InfoWindow({
         content: 'La Serina Grill'
     });
-    marker1.addListener('click', function () {
-        infoWindow1.open(map, marker1);
+    laSerina.addListener('click', function () {
+        infoWindow1.open(map, laSerina);
     });
-    var treasure = {lat: 33.514616, lng: -117.759609};
     var marker2 = new google.maps.Marker({
-        position: treasure,
+        position: {lat: 33.514616, lng: -117.759609},
         map: map,
         title: 'Treasure Island Beach'
     });
@@ -146,9 +159,8 @@ function initMap() {
     marker2.addListener('click', function () {
         infoWindow2.open(map, marker2);
     });
-    var starFish = {lat: 33.515848, lng: -117.756028};
     var marker3 = new google.maps.Marker({
-        position: starFish,
+        position: {lat: 33.515848, lng: -117.756028},
         map: map,
         title: 'Star-fish Laguna Beach'
     });
@@ -158,9 +170,8 @@ function initMap() {
     marker3.addListener('click', function () {
         infoWindow3.open(map, marker3);
     });
-    var montage = {lat: 33.514953, lng: -117.757155};
     var marker4 = new google.maps.Marker({
-        position: montage,
+        position: {lat: 33.514953, lng: -117.757155},
         map: map,
         title: 'Montage Laguna Beach'
     });
@@ -170,9 +181,8 @@ function initMap() {
     marker4.addListener('click', function () {
         infoWindow4.open(map, marker4);
     });
-    var casaLaguna = {lat: 33.524058, lng: -117.764995};
     var marker5 = new google.maps.Marker({
-        position: casaLaguna,
+        position: {lat: 33.524058, lng: -117.764995},
         map: map,
         title: 'Casa Laguna Hotel and Spa'
     });
@@ -182,9 +192,8 @@ function initMap() {
     marker5.addListener('click', function () {
         infoWindow5.open(map, marker5);
     });
-    var pirate = {lat: 33.520655, lng: -117.764603};
     var marker6 = new google.maps.Marker({
-        position: pirate,
+        position: {lat: 33.520655, lng: -117.764603},
         map: map,
         title: 'Pirate Tower'
     });
@@ -194,9 +203,8 @@ function initMap() {
     marker6.addListener('click', function () {
         infoWindow6.open(map, marker6);
     });
-    var treasurePark = {lat: 33.513560, lng: -117.755424};
     var marker7 = new google.maps.Marker({
-        position: treasurePark,
+        position: {lat: 33.513560, lng: -117.755424},
         map: map,
         title: 'Treasure Island Park'
     });
@@ -207,3 +215,9 @@ function initMap() {
         infoWindow7.open(map, marker7);
     });
 }
+
+//TODO: Model (this is where the location information will go)
+//need the list and filter functions here
+
+
+//TODO: add a function to handle errors
