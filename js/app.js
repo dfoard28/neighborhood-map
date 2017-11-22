@@ -1,58 +1,66 @@
 'use strict';
-//TODO: need to implement functionality on nav-bar item.... this should close the aside when clicked
-//TODO: need to implement functionality on the list marker items... when clicked they should open the info window on the marker and should be animated somehow
-//TODO: view model function
-//should add the creation of markers to this area
-var ViewModel = function () {
-    this.title = location.title;
-    this.position = location.position;
-    this.filter = function () {
+//array of location markers
+var markers = [
+    {
+        position: {lat: 33.515349, lng: -117.755575},
+        title: 'La Serina Grill',
+        type: 'Food',
+        show: true
 
+    },
+    {
+        position: {lat: 33.514616, lng: -117.759609},
+        title: 'Treasure Island Beach',
+        type: 'Beach',
+        show: true
+    },
+    {
+        position: {lat: 33.515848, lng: -117.756028},
+        title: 'Star-fish Laguna Beach',
+        type: 'Food',
+        show: true
+    },
+    {
+        position: {lat: 33.514953, lng: -117.757155},
+        title: 'Montage Laguna Beach',
+        type: 'Hotel',
+        show: true
+    },
+    {
+        position: {lat: 33.524058, lng: -117.764995},
+        title: 'Casa Laguna Hotel and Spa',
+        type: 'Hotel',
+        show: true
+    },
+    {
+        position: {lat: 33.520655, lng: -117.764603},
+        title: 'Pirate Tower',
+        type: 'Beach',
+        show: true
+    },
+    {
+        position: {lat: 33.513560, lng: -117.755424},
+        title: 'Treasure Island Park',
+        type: 'Park',
+        show: true
     }
-    this.location = ko.observableArray([
-        {
-            position: {lat: 33.515349, lng: -117.755575},
-            title: 'La Serina Grill',
-            type: 'Food'
-        },
-        {
-            position: {lat: 33.514616, lng: -117.759609},
-            title: 'Treasure Island Beach',
-            type: 'Beach'
-        },
-        {
-            position: {lat: 33.515848, lng: -117.756028},
-            title: 'Star-fish Laguna Beach',
-            type: 'Food'
-        },
-        {
-            position: {lat: 33.514953, lng: -117.757155},
-            title: 'Montage Laguna Beach',
-            type: 'Hotel'
-        },
-        {
-            position: {lat: 33.524058, lng: -117.764995},
-            title: 'Casa Laguna Hotel and Spa',
-            type: 'Hotel'
-        },
-        {
-            position: {lat: 33.520655, lng: -117.764603},
-            title: 'Pirate Tower',
-            type: 'Beach'
-        },
-        {
-            position: {lat: 33.513560, lng: -117.755424},
-            title: 'Treasure Island Park',
-            type: 'Park'
-        }
-    ]);
+];
+//view model function
+//TODO: add marker creation here?
+var ViewModel = function () {
+    //TODO: infowindow should open and marker should bounce when list item is clicked.
+    this.location = ko.observableArray(markers);
+    this.position = location.position;
+    this.title = location.title;
+    this.type = location.type;
+
 };
 
 ko.applyBindings(new ViewModel());
 
-//Create a map variable
+//map variable
 var map;
-  //Complete the following function to initialize the map
+  //initialize the map
 function initMap() {
      //use a constructor to create a new map JS object
     map = new google.maps.Map(document.getElementById('map'), {
@@ -139,45 +147,7 @@ function initMap() {
             }
         ]
     });
-   // markers array 
-   //TODO:make part of viewmodel but not knockout observables
-    var markers = [
-        {
-            position: {lat: 33.515349, lng: -117.755575},
-            title: 'La Serina Grill',
-            type: 'Food'
-        },
-        {
-            position: {lat: 33.514616, lng: -117.759609},
-            title: 'Treasure Island Beach',
-            type: 'Beach'
-        },
-        {
-            position: {lat: 33.515848, lng: -117.756028},
-            title: 'Star-fish Laguna Beach',
-            type: 'Food'
-        },
-        {
-            position: {lat: 33.514953, lng: -117.757155},
-            title: 'Montage Laguna Beach',
-            type: 'Hotel'
-        },
-        {
-            position: {lat: 33.524058, lng: -117.764995},
-            title: 'Casa Laguna Hotel and Spa',
-            type: 'Hotel'
-        },
-        {
-            position: {lat: 33.520655, lng: -117.764603},
-            title: 'Pirate Tower',
-            type: 'Beach'
-        },
-        {
-            position: {lat: 33.513560, lng: -117.755424},
-            title: 'Treasure Island Park',
-            type: 'Park'
-        }
-    ];
+
     //forEach loop that adds a marker, and info window and an event listener for the info window to the map
     markers.forEach(function (element) {
         var mark = new google.maps.Marker({
@@ -199,20 +169,14 @@ function initMap() {
               mark.setAnimation(null);
             } else {
               mark.setAnimation(google.maps.Animation.BOUNCE);
+              setTimeout(function () {mark.setAnimation(null);}, 2000);
             }
         }
     });
 }
-//TODO: AJAX call to foursquare API
-
-
-//TODO: Model (this is where the location information will go)
-//need the list and filter functions here
-
-
-//TODO: add a function to handle errors
+//function to handle errors
 function errors() {
-    //function to handle any errors 
+    alert("failed to load")
 }
 
 //TODO: add an is-active class to the dropdown element when clicked (do in Knockout?)
