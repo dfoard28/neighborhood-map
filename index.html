@@ -21,9 +21,9 @@
                 <div id="map"></div>
             </div>
             <aside class="menu">
-                <div class="dropdown">
+                <div class="dropdown" data-bind:"click: isActive">
                     <div class="dropdown-trigger">
-                      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
+                      <button class="button filter" aria-haspopup="true" aria-controls="dropdown-menu3">
                         <span>Filter Locations</span>
                         <span class="icon is-small">
                           <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -32,23 +32,12 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                       <div class="dropdown-content">
-                        <a href="#" class="dropdown-item">
-                          Food
-                        </a>
-                        <a href="#" class="dropdown-item">
-                          Beach
-                        </a>
-                        <a href="#" class="dropdown-item">
-                          Hotel
-                        </a>
-                        <a href="#" class="dropdown-item">
-                          Park
-                        </a>
+                        <li class="dropdown-item" data-bind="foreach: {data:types, as: 'type'}"><a class="dropdown-item" data-bind="text: type, click: $parent.filter"></a></li>
                       </div>
                     </div>
                   </div>
                 <ul class="menu-list">
-                    <li data-bind="foreach: location"><a class="has-text-light" data-bind="text: title"></a></li>
+                    <li data-bind="foreach: locations"><a class="has-text-light" data-bind="text: title, click: $parent.activateMarker"></a></li>
                 </ul>
             </aside>
         </div>
