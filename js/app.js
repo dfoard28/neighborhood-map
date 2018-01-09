@@ -1,5 +1,5 @@
 'use strict';
-//array of location markers
+//array of location markers that includes the position, title, and type
 var markers = [
     {
         position: {lat: 33.515349, lng: -117.755575},
@@ -13,8 +13,8 @@ var markers = [
         type: 'Beach'
     },
     {
-        position: {lat: 33.515848, lng: -117.756028},
-        title: 'Star-fish Laguna Beach',
+        position: {lat: 33.514619, lng: -117.757290},
+        title: 'Mosaic Bar and Grille',
         type: 'Food'
     },
     {
@@ -24,7 +24,7 @@ var markers = [
     },
     {
         position: {lat: 33.524058, lng: -117.764995},
-        title: 'Casa Laguna Hotel and Spa',
+        title: 'Casa Laguna Inn & Spa',
         type: 'Hotel'
     },
     {
@@ -38,103 +38,147 @@ var markers = [
         type: 'Park'
     }
 ];
-
+//location constructor
 var Location = function (data) {
     this.postion = data.position;
     this.title = data.title;
     this.type = data.type;
+    this.address = data.address;
+    this.link = data.link;
 };
 
-//viewmodel function
-var ViewModel = function () {
-    var self = this;
-    self.types = ['Food', 'Beach', 'Hotel', 'Park', 'All'];
-    self.locations = ko.observableArray([]);
-    self.markers = [];
-    var renderLocations = function (filteredMarkers) {
-        ko.utils.arrayForEach(self.locations(), function (location) {
-            console.log(location.marker);
-            location.marker.setMap(null);
+//empty array to push promises into
+var promises = [];
+//loop on markers to create some var's to hold information to put into the ajax url call (so I am not duplicating over and over again during each call)
+markers.forEach(function (marker) {
+    var lat = marker.position.lat;
+    var lng = marker.position.lng;
+    var query = marker.title;
+    var startUrl = 'https://api.foursquare.com/v2/venues/<uri>?client_id=HU2F5LJ2CX0VCC2RKL3MRHKFOVOPAYXBWHP4FJ3HCQDJGIMX&client_secret=DBD5U4JFV1TXDF1WSRAOSDFHYWF3EPIE0ARJGP21DCQFF5CH&v=20170801&';
+    //Promise to hold the first ajax call to foursquares API
+    var promise = new Promise(function (resolve) {
+        $.ajax({
+            url: startUrl.replace('<uri>', 'search') + 'll=' + lat + ',' + lng + '&query=' + query + '&limit=1&intent=match',
+            method: 'GET'
+        }).done(handleResponse).fail(function (error) {
+            errors(error);
+            resolve(error);
         })
-        self.locations.removeAll();
-        filteredMarkers.forEach(function (loca) {
-            var location = new Location(loca);
-          //  self.locations.push(location);
-            location.marker = new google.maps.Marker({
-                position: loca.position,
-                map: map,
-                animation: google.maps.Animation.DROP,
-                title: loca.title
-            });
-            location.marker.addListener('click', function () {
-                self.activateMarker(this);
-            });
-            self.activateMarker = function (marker) {
-                var self = marker.marker !== undefined ? marker.marker : marker;
-                var info = new google.maps.InfoWindow({
-                    content: self.title
+        //this is to handle the response from foursquares API
+        function handleResponse(data) {
+            //get the id for the given location from foursquare api
+            var id = data.response.venues[0].id;
+            //adding an address to the marker
+            marker.address = data.response.venues[0].location.formattedAddress;
+            //innerPromises empty array (going to push a second promise with another foursquare ajax call within)
+            var innerPromises = [];
+            //another promise that does a second ajax call to foursquare
+            var innerPromise = new Promise(function (innerResolve) {
+                $.ajax({
+                    url: startUrl.replace('<uri>', '/' + id + '/links'),
+                    method: 'GET'
+                }).done(function (linkData) {
+                    //this is going to take a url that is returned from fousquare and if it is not undefined then it is being added with a anchor tag so it can be clicked on
+                    marker.link = linkData.response.links.items.reduce(function (r,link) {
+                        var url = link.url;
+                        if (url !== undefined) {
+                            return r + '<a target="_blank" href="' + url + '">' + url + '</a>,';
+                        } else {
+                            return r;
+                        }
+                    },'').slice(0, -1);
+                    innerResolve(linkData);
+                }).fail(function (error) {
+                    //non catastrophic error, alert and continue
+                    errors(error);
+                    innerResolve(linkData);
                 });
-                info.open(map, self);
-                if (self.getAnimation() !== null) {
-                    self.setAnimation(null);
-                } else {
-                    self.setAnimation(google.maps.Animation.BOUNCE);
-                    setTimeout(function () {
-                        self.setAnimation(null);
-                    }, 2000);
-                }
-            }
-            self.locations.push(location);
-        });
-    }
- /*   markers.forEach(function (loca) {
-        var location = new Location(loca);
-      //  self.locations.push(location);
-        location.marker = new google.maps.Marker({
-            position: loca.position,
-            map: map,
-            animation: google.maps.Animation.DROP,
-            title: loca.title
-        });
-        location.marker.addListener('click', function () {
-            self.activateMarker(this);
-        });
-        self.activateMarker = function (marker) {
-            var self = marker.marker !== undefined ? marker.marker : marker;
-            var info = new google.maps.InfoWindow({
-                content: self.title
             });
-            info.open(map, self);
-            if (self.getAnimation() !== null) {
-                self.setAnimation(null);
+            //pushing the innerPromise into the innerPromises empty array
+            innerPromises.push(innerPromise);
+            Promise.all(innerPromises).then(function () { 
+                resolve(data);
+            });
+        }
+    });
+    promises.push(promise);
+});
+
+Promise.all(promises).then(function (result) {
+    //viewmodel function
+    var ViewModel = function () {
+        var self = this;
+        //array for filter types
+        self.types = ['Food', 'Beach', 'Hotel', 'Park', 'All'];
+        //observable array for markers
+        self.locations = ko.observableArray([]);
+        self.markers = [];
+        //rendersLocations function, this renders the map markers along with the list
+        var renderLocations = function (filteredMarkers) {
+        //does a foreach on the locations to not show locations based off of filter
+            ko.utils.arrayForEach(self.locations(), function (location) {
+                location.marker.setMap(null);
+            });
+            //removing all of the locations list based off of filter function
+            self.locations.removeAll();
+            filteredMarkers.forEach(function (loca) {
+                var location = new Location(loca);
+                //adding markers to the map
+                location.marker = new google.maps.Marker({
+                    position: loca.position,
+                    map: map,
+                    animation: google.maps.Animation.DROP,
+                    title: loca.title,
+                    address: loca.address,
+                    link: loca.link
+                });
+                //adding a listener for when the markers are clicked
+                location.marker.addListener('click', function () {
+                    self.activateMarker(this);
+                });
+                //opening the infowindow when clicked from list and from map
+                self.activateMarker = function (marker) {
+                    var self = marker.marker !== undefined ? marker.marker : marker;
+                    var info = new google.maps.InfoWindow({
+                        content: self.title + '<br>' + self.address.join('<br>') + '<br>' + self.link
+                    });
+                    info.open(map, self);
+                    //animation for when a marker is clicked (from list or map)
+                    if (self.getAnimation() !== null) {
+                        self.setAnimation(null);
+                    } else {
+                        self.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(function () {
+                            self.setAnimation(null);
+                        }, 2000);
+                    }
+                }
+                self.locations.push(location);
+            });
+        };
+        //calling the renderLocations function
+        renderLocations(markers);
+        //filter function, used to filter on the types of locations
+        self.filter = function (criteria) {
+            if (criteria === 'All'){
+                renderLocations(markers);
             } else {
-                self.setAnimation(google.maps.Animation.BOUNCE);
-                setTimeout(function () {
-                    self.setAnimation(null);
-                }, 2000);
+                var locations = markers.filter(function (loc) {
+                    return loc.type === criteria;
+                });
+                renderLocations(locations);
             }
-        }
-        self.locations.push(location);
-    });*/
-            renderLocations(markers);
-    self.filter = function (criteria) {
-        if(criteria === 'All'){
-            renderLocations(markers);
-        } else {
-        var locations = markers.filter(function (loc) {
-                return loc.type === criteria;
-        });
-            renderLocations(locations);
-        }
+        };
     };
-};
+    var viewModel = new ViewModel();
+    ko.applyBindings(viewModel);
+});
 
-
-//map variable
+  //map variable
 var map;
   //initialize the map
 function initMap() {
-     //use a constructor to create a new map JS object
+      //use a constructor to create a new map JS object
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 33.514490, lng: -117.759628},
         zoom: 15,
@@ -220,43 +264,11 @@ function initMap() {
         ]
 
     });
-    var viewModel = new ViewModel();
-    ko.applyBindings(viewModel);
-   // addMar(viewModel);
 }
 
-//forEach loop that adds a marker, info window, and an event listener for the info window to the map
-/*function addMar(viewModel) {
-    ko.utils.arrayForEach(viewModel.locations, function (element) {
-        var mark = new google.maps.Marker({
-            position: element.position,
-            map: map,
-            animation: google.maps.Animation.DROP,
-            title: element.title
-        });
-        var info = new google.maps.InfoWindow({
-            content: element.title
-        });
-        mark.addListener('click', function () {
-            info.open(map, mark);
-            toggleBounce();
-        });
-
-    //function to make markers bounce when clicked on (attribute to google maps api)
-        function toggleBounce() {
-            if (mark.getAnimation() !== null) {
-                mark.setAnimation(null);
-            } else {
-                mark.setAnimation(google.maps.Animation.BOUNCE);
-              setTimeout(function () {mark.setAnimation(null);}, 2000);
-            }
-        }
-    });
-}*/
-
 //function to handle errors
-function errors() {
-    alert("failed to load")
+function errors(err) {
+    alert(err);
 }
 
 //add an is-active class to the dropdown element when clicked, this is required by bulma for dropdown
