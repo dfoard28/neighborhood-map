@@ -1,3 +1,4 @@
+/*jslint node: true */
 'use strict';
 //array of location markers that includes the position, title, and type
 var markers = [
@@ -63,7 +64,7 @@ markers.forEach(function (marker) {
         }).done(handleResponse).fail(function (error) {
             errors(error);
             resolve(error);
-        })
+        });
         //this is to handle the response from foursquares API
         function handleResponse(data) {
             //get the id for the given location from foursquare api
@@ -91,7 +92,7 @@ markers.forEach(function (marker) {
                 }).fail(function (error) {
                     //non catastrophic error, alert and continue
                     errors(error);
-                    innerResolve(linkData);
+                    innerResolve(error);
                 });
             });
             //pushing the innerPromise into the innerPromises empty array
@@ -152,7 +153,7 @@ Promise.all(promises).then(function (result) {
                             self.setAnimation(null);
                         }, 2000);
                     }
-                }
+                };
                 self.locations.push(location);
             });
         };
@@ -267,7 +268,7 @@ function initMap() {
 }
 
 //function to handle errors
-function errors(err) {
+function errors() {
     alert("failed to load");
 }
 
