@@ -1,4 +1,6 @@
 /*jslint node: true */
+/*global Google */
+/*global ko */
 'use strict';
 //array of location markers that includes the position, title, and type
 var markers = [
