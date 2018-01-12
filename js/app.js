@@ -68,7 +68,7 @@ markers.forEach(function (marker) {
         function handleResponse(data) {
             //get the id for the given location from foursquare api
             var id = data.response.venues[0].id;
-            //adding an address to the marker
+            //adding an address to the marker array
             marker.address = data.response.venues[0].location.formattedAddress;
             //innerPromises empty array (going to push a second promise with another foursquare ajax call within)
             var innerPromises = [];
@@ -103,7 +103,7 @@ markers.forEach(function (marker) {
     });
     promises.push(promise);
 });
-
+//this promise makes sure all promises are settled before running
 Promise.all(promises).then(function (result) {
     //viewmodel function
     var ViewModel = function () {
@@ -268,7 +268,7 @@ function initMap() {
 
 //function to handle errors
 function errors(err) {
-    alert(err);
+    alert("failed to load");
 }
 
 //add an is-active class to the dropdown element when clicked, this is required by bulma for dropdown
